@@ -91,9 +91,12 @@ def ProcessSearchResults(url):
         title = item['headline'].strip()
         summary = item['summary'].strip()
         subtitle = Datetime.ParseDate(item['publishdate']).strftime('%a %b %d, %Y')
-        videoPageUrl = VIDEO_PAGE_URL % title.replace(' ','-')
-        thumb = XML.ElementFromURL(videoPageUrl, True, errors='ignore').xpath('//div[@id="imageGallery"]/p/a')[0].get('href')
-        dir.Append(Function(VideoItem(PlayVideo, title, subtitle=subtitle, summary=summary, thumb=thumb), videoPageUrl=videoPageUrl))
+        videoPageUrl = VIDEO_PAGE_URL % title.replace(' ','-').replace('\'', '')
+        try:
+          thumb = XML.ElementFromURL(videoPageUrl, True, errors='ignore').xpath('//div[@id="imageGallery"]/p/a')[0].get('href')
+          dir.Append(Function(VideoItem(PlayVideo, title, subtitle=subtitle, summary=summary, thumb=thumb), videoPageUrl=videoPageUrl))
+        except:
+          Log("Error adding video from %s" % videoPageUrl)
     return dir
 
 ####################################################################################################
