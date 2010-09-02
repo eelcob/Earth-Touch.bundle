@@ -1,0 +1,8 @@
+[
+  {
+    'id':'usehd',
+    'type':'bool',
+    'default':'true',
+    'label':'Display in 720p'
+  }
+]

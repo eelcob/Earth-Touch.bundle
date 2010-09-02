@@ -60,11 +60,6 @@ def MainMenuVideo():
     dir.Append(Function(InputDirectoryItem(ArchiveSearch, title=L("Search Archive ..."), prompt=L("Search Archive"), thumb=R('search.png'))))
     dir.Append(PrefsItem(L("Preferences..."), thumb=R('icon-prefs.png')))
     return dir
-
-####################################################################################################   
-def CreatePrefs():
-  Prefs.Add(id=USE_HD_PREF_KEY, type='bool', default=True, label='Display in 720p')
-  
   
 #######################################################################
 def ArchiveSearch(sender, query, page=1):
