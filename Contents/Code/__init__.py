@@ -1,4 +1,4 @@
-import re, string, datetime
+import string, datetime
 
 VIDEO_PREFIX      = "/video/earthtouch"
 
@@ -140,6 +140,7 @@ def PlayVideo(sender, videoPageUrl):
         res = HD_RES
     xpath = '//a[@title="HD %s commentary"]' % res
     videoUrl =  HTML.ElementFromURL(videoPageUrl, errors='ignore').xpath(xpath)[0].get('href')
+    Log("VideoURL: "+videoUrl)
     return Redirect(videoUrl)
 
 ####################################################################################################
