@@ -42,21 +42,22 @@ def Start():
   Plugin.AddViewGroup("Details", viewMode="InfoList", mediaType="items")
   MediaContainer.art = R('art-default.png')
   MediaContainer.title1 = 'Earth-Touch'
-  HTTP.SetCacheTime(CACHE_INTERVAL)
+  DirectoryItem.thumb=R("icon-default.png")
+  HTTP.CacheTime = CACHE_INTERVAL
   
 ####################################################################################################
 def MainMenuVideo():
     dir = MediaContainer(mediaType='video')  
-    dir.Append(Function(DirectoryItem(LastestStories, title="Latest Stories", thumb=R(ICON))))
-    dir.Append(Function(DirectoryItem(Feed, title="Featured Videos (with commentary)", thumb=R(ICON)), urlFormat = FEATURED_COMMENTARY))
-    dir.Append(Function(DirectoryItem(Feed, title="Featured Videos (no commentary)", thumb=R(ICON)), urlFormat = FEATURED_NO_COMMENTARY))
-    dir.Append(Function(DirectoryItem(Feed, title="Wildlife Highlights", thumb=R(ICON)), urlFormat = WILDLIFE_HIGHLIGHTS))
-    dir.Append(Function(DirectoryItem(Feed, title="Marine Channel HD", thumb=R(ICON)), urlFormat = MARINE_CHANNEL, variableResolution=False))
-    dir.Append(Function(DirectoryItem(Feed, title="Moremi Lions Channel HD", thumb=R(ICON)), urlFormat = MOREMI_LIONS_CHANNEL, variableResolution=False))
-    dir.Append(Function(DirectoryItem(Feed, title="Kids Channel HD", thumb=R(ICON)), urlFormat = KIDS_CHANNEL, variableResolution=False))
-    dir.Append(Function(DirectoryItem(ArchiveBrowse, title="Most Recent in Archive", thumb=R(ICON)), order=DATE_ORDER))
-    dir.Append(Function(DirectoryItem(ArchiveBrowse, title="Highest Rated in Archive", thumb=R(ICON)), order=HIGHEST_RATED))
-    dir.Append(Function(DirectoryItem(ArchiveBrowse, title="Most Viewed in Archive", thumb=R(ICON)), order=MOST_VIEWED))
+    dir.Append(Function(DirectoryItem(LastestStories, title="Latest Stories")))
+    dir.Append(Function(DirectoryItem(Feed, title="Featured Videos (with commentary)"), urlFormat = FEATURED_COMMENTARY))
+    dir.Append(Function(DirectoryItem(Feed, title="Featured Videos (no commentary)"), urlFormat = FEATURED_NO_COMMENTARY))
+    dir.Append(Function(DirectoryItem(Feed, title="Wildlife Highlights"), urlFormat = WILDLIFE_HIGHLIGHTS))
+    dir.Append(Function(DirectoryItem(Feed, title="Marine Channel HD"), urlFormat = MARINE_CHANNEL, variableResolution=False))
+    dir.Append(Function(DirectoryItem(Feed, title="Moremi Lions Channel HD"), urlFormat = MOREMI_LIONS_CHANNEL, variableResolution=False))
+    dir.Append(Function(DirectoryItem(Feed, title="Kids Channel HD"), urlFormat = KIDS_CHANNEL, variableResolution=False))
+    dir.Append(Function(DirectoryItem(ArchiveBrowse, title="Most Recent in Archive"), order=DATE_ORDER))
+    dir.Append(Function(DirectoryItem(ArchiveBrowse, title="Highest Rated in Archive"), order=HIGHEST_RATED))
+    dir.Append(Function(DirectoryItem(ArchiveBrowse, title="Most Viewed in Archive"), order=MOST_VIEWED))
     dir.Append(Function(InputDirectoryItem(ArchiveSearch, title=L("Search Archive ..."), prompt=L("Search Archive"), thumb=R('search.png'))))
     dir.Append(PrefsItem(L("Preferences..."), thumb=R('icon-prefs.png')))
     return dir
@@ -88,7 +89,7 @@ def ProcessSearchResults(url):
         subtitle = Datetime.ParseDate(item['publishdate']).strftime('%a %b %d, %Y')
         videoPageUrl = VIDEO_PAGE_URL % title.replace(' ','-').replace('\'', '')
         try:
-          thumb = XML.ElementFromURL(videoPageUrl, True, errors='ignore').xpath('//div[@id="imageGallery"]/p/a')[0].get('href')
+          thumb = HTML.ElementFromURL(videoPageUrl, errors='ignore').xpath('//div[@id="imageGallery"]/p/a')[0].get('href')
           dir.Append(Function(VideoItem(PlayVideo, title, subtitle=subtitle, summary=summary, thumb=thumb), videoPageUrl=videoPageUrl))
         except:
           Log("Error adding video from %s" % videoPageUrl)
@@ -100,7 +101,7 @@ def Feed(sender, urlFormat, variableResolution=True):
     url = urlFormat
     if variableResolution:
         res = SD_RES
-        if Prefs.Get(USE_HD_PREF_KEY):
+        if Prefs[USE_HD_PREF_KEY]:
             res = HD_RES
         url = urlFormat % res
     for item in XML.ElementFromURL(url, errors='ignore').xpath('//item', namespaces=NAMESPACES_A):
@@ -128,17 +129,17 @@ def LastestStories(sender):
         if stop > -1:
             summary = summary[0:stop]
         videoPageUrl = item.xpath('feedburner:origLink', namespaces=NAMESPACES_B)[0].text
-        thumb = XML.ElementFromURL(videoPageUrl, True, errors='ignore').xpath('//div[@id="imageGallery"]/p/a')[0].get('href')
+        thumb = HTML.ElementFromURL(videoPageUrl, errors='ignore').xpath('//div[@id="imageGallery"]/p/a')[0].get('href')
         dir.Append(Function(VideoItem(PlayVideo, title, subtitle=None, summary=summary, thumb=thumb), videoPageUrl=videoPageUrl))
     return dir
 
 ####################################################################################################
 def PlayVideo(sender, videoPageUrl):
     res = SD_RES
-    if Prefs.Get(USE_HD_PREF_KEY):
+    if Prefs[USE_HD_PREF_KEY]:
         res = HD_RES
     xpath = '//a[@title="HD %s commentary"]' % res
-    videoUrl =  XML.ElementFromURL(videoPageUrl, True, errors='ignore').xpath(xpath)[0].get('href')
+    videoUrl =  HTML.ElementFromURL(videoPageUrl, errors='ignore').xpath(xpath)[0].get('href')
     return Redirect(videoUrl)
 
 ####################################################################################################
