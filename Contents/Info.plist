@@ -24,8 +24,6 @@
 	<string>2</string>
 	<key>PlexMediaContainer</key>
 	<string>MOV</string>
-	<key>PlexPluginDebug</key>
-	<string>1</string>
 	<key>PlexPluginMode</key>
 	<string>AlwaysOn</string>
 	<key>PlexVideoCodec</key>

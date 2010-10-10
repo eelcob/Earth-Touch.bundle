@@ -38,9 +38,9 @@ ICON = "icon-default.png"
 
 ####################################################################################################
 def Start():
-  Plugin.AddPrefixHandler(VIDEO_PREFIX, MainMenuVideo, "Earth-Touch", ICON, "art-default.png")
+  Plugin.AddPrefixHandler(VIDEO_PREFIX, MainMenuVideo, "Earth-Touch", ICON, "art-default.jpg")
   Plugin.AddViewGroup("Details", viewMode="InfoList", mediaType="items")
-  MediaContainer.art = R('art-default.png')
+  MediaContainer.art = R('art-default.jpg')
   MediaContainer.title1 = 'Earth-Touch'
   DirectoryItem.thumb=R("icon-default.png")
   HTTP.CacheTime = CACHE_INTERVAL
