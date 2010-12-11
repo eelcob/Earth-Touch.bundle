@@ -1,10 +1,10 @@
-import string, datetime
+import re, string, datetime
 
 VIDEO_PREFIX      = "/video/earthtouch"
 
 NAMESPACES_A   = {
     'itunes':'http://www.itunes.com/dtds/podcast-1.0.dtd',
-    'media':'http://search.yahoo.com/mrss/', 
+    'media':'http://search.yahoo.com/mrss/',
     'feedburner':'http://rssnamespace.org/feedburner/ext/1.0'
 }
 FEATURED_COMMENTARY = "http://feeds2.feedburner.com/earth-touch_featured_%s_commentary?format=xml"
@@ -43,11 +43,11 @@ def Start():
   MediaContainer.art = R('art-default.jpg')
   MediaContainer.title1 = 'Earth-Touch'
   DirectoryItem.thumb=R("icon-default.png")
-  HTTP.CacheTime = CACHE_INTERVAL
+  HTTP.SetCacheTime(CACHE_INTERVAL)
   
 ####################################################################################################
 def MainMenuVideo():
-    dir = MediaContainer(mediaType='video')  
+    dir = MediaContainer(mediaType='video')
     dir.Append(Function(DirectoryItem(LastestStories, title="Latest Stories")))
     dir.Append(Function(DirectoryItem(Feed, title="Featured Videos (with commentary)"), urlFormat = FEATURED_COMMENTARY))
     dir.Append(Function(DirectoryItem(Feed, title="Featured Videos (no commentary)"), urlFormat = FEATURED_NO_COMMENTARY))
@@ -82,22 +82,22 @@ def ArchiveBrowse(sender, page=1, order=DATE_ORDER):
     
 #################################################################################################### 
 def ProcessSearchResults(url):
-    dir = MediaContainer(viewGroup='Details', mediaType='video')  
+    dir = MediaContainer(viewGroup='Details', mediaType='video')
     for item in JSON.ObjectFromURL(url)['searchresult']:
         title = item['headline'].strip()
         summary = item['summary'].strip()
         subtitle = Datetime.ParseDate(item['publishdate']).strftime('%a %b %d, %Y')
         videoPageUrl = VIDEO_PAGE_URL % title.replace(' ','-').replace('\'', '')
         try:
-          thumb = HTML.ElementFromURL(videoPageUrl, errors='ignore').xpath('//div[@id="imageGallery"]/p/a')[0].get('href')
-          dir.Append(Function(VideoItem(PlayVideo, title, subtitle=subtitle, summary=summary, thumb=thumb), videoPageUrl=videoPageUrl))
+          #thumb = HTML.ElementFromURL(videoPageUrl, errors='ignore').xpath('//div[@id="imageGallery"]/p/a')[0].get('href')
+          dir.Append(Function(VideoItem(PlayVideo, title, subtitle=subtitle, summary=summary, thumb=Function(GetThumb, url=videoPageUrl)), videoPageUrl=videoPageUrl))
         except:
           Log("Error adding video from %s" % videoPageUrl)
     return dir
 
 ####################################################################################################
 def Feed(sender, urlFormat, variableResolution=True):
-    dir = MediaContainer(viewGroup='Details', mediaType='video')  
+    dir = MediaContainer(viewGroup='Details', mediaType='video')
     url = urlFormat
     if variableResolution:
         res = SD_RES
@@ -121,7 +121,7 @@ def Feed(sender, urlFormat, variableResolution=True):
 
 ####################################################################################################
 def LastestStories(sender):
-    dir = MediaContainer(viewGroup='Details', mediaType='video') 
+    dir = MediaContainer(viewGroup='Details', mediaType='video')
     for item in XML.ElementFromURL(LATEST_STORIES, errors='ignore').xpath('//item', namespaces=NAMESPACES_B):
         title = item.xpath('title', namespaces=NAMESPACES_B)[0].text
         summary = item.xpath('description', namespaces=NAMESPACES_B)[0].text
@@ -129,8 +129,8 @@ def LastestStories(sender):
         if stop > -1:
             summary = summary[0:stop]
         videoPageUrl = item.xpath('feedburner:origLink', namespaces=NAMESPACES_B)[0].text
-        thumb = HTML.ElementFromURL(videoPageUrl, errors='ignore').xpath('//div[@id="imageGallery"]/p/a')[0].get('href')
-        dir.Append(Function(VideoItem(PlayVideo, title, subtitle=None, summary=summary, thumb=thumb), videoPageUrl=videoPageUrl))
+        #thumb = HTML.ElementFromURL(videoPageUrl, errors='ignore').xpath('//div[@id="imageGallery"]/p/a')[0].get('href')
+        dir.Append(Function(VideoItem(PlayVideo, title, subtitle=None, summary=summary, thumb=Function(GetThumb, url=videoPageUrl)), videoPageUrl=videoPageUrl))
     return dir
 
 ####################################################################################################
@@ -154,3 +154,12 @@ def ConvertDuration(durationStr):
     if len(tokens) > 2:
         hours = int(tokens[-3])
     return 1000*(60*60*hours + 60*minutes + seconds)
+	
+####################################################################################################
+def GetThumb(url):
+    try:
+        thumb = HTML.ElementFromURL(url, errors='ignore').xpath('//div[@id="imageGallery"]/p/a')[0].get('href')
+        return Redirect(thumb)
+    except:
+        pass
+    return Redirect(R(ICON))
