@@ -20,8 +20,6 @@
 	<array>
 		<string>AAC</string>
 	</array>
-	<key>PlexClientPlatforms</key>
-	<string>MacOSX,iOS,Android,LGTV</string>
 	<key>PlexFrameworkVersion</key>
 	<string>2</string>
 	<key>PlexMediaContainer</key>
