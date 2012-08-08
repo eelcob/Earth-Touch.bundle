@@ -10,19 +10,11 @@ def Search(query):
 	oc = ObjectContainer(title1="Search", art=R(ART))
 	url = SEARCH_URL % query.replace(" ", "%20")
 
-	Log.Debug('break1')
 	for result in HTML.ElementFromURL(url).xpath('//div[contains(@class, "episode-block")]'):
-		Log.Debug('break2')
-
 		title = result.xpath('.//h3')[0].text
 		summary = result.xpath('.//small/a')[0].text
 		link = BASE_URL + result.xpath('.//a[@class="eps-play"]')[0].get('href')
 		thumb = BASE_URL + result.xpath('.//img')[0].get('src')
-
-		Log.Debug(title)
-		Log.Debug(summary)
-		Log.Debug(link)
-		
 		
 		oc.add(VideoClipObject(
 			url = link,
