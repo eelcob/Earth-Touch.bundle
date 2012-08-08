@@ -2,6 +2,7 @@ VIDEO_PREFIX      = "/video/earthtouch"
 ART 			= 'art-default.jpg'
 ICON 			= 'icon-default.png'
 NAME 			= "Earth Touch"
+ICON_SEARCH 	= "search.png"
 
 BASE			= "http://www.earth-touch.com"
 SHOWS			= BASE + "/shows"
@@ -42,6 +43,9 @@ def MainMenu():
 		show_link	= BASE + shows.xpath('./div[@class="show-overlay"]/a')[0].get('href')
 
 		oc.add(DirectoryObject(key = Callback(getVideos, url=show_link), title=show_title, summary=show_descr, thumb=Resource.ContentsOfURLWithFallback(url=show_thumb, fallback=ICON)))
+
+	oc.add(SearchDirectoryObject(identifier="com.plexapp.plugins.earthtouch", title = L('Search'), prompt = L('Search'), thumb = R(ICON_SEARCH)))
+	
 		
 	return oc
 

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Search</key>
+	<dict>
+		<key>EarthTouch</key>
+		<dict>
+			<key>TestQueries</key>
+			<array>
+				<string>dolphin</string>
+			</array>
+		</dict>
+	</dict>
+</dict>
+</plist>
